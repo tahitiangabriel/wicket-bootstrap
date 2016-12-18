@@ -42,7 +42,7 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.SpinJsR
  * @author Tobias Soloschenko
  *
  */
-public class SummernoteEditor extends FormComponent<String> {
+public abstract class SummernoteEditor extends FormComponent<String> {
 
     private static final long serialVersionUID = 1L;
 
@@ -194,7 +194,9 @@ public class SummernoteEditor extends FormComponent<String> {
                         SummernoteStorage storage = SummernoteConfig.getStorage(config.getStorageId());
                         storage.writeContent(imageName, fileItem.getInputStream());
                         WebResponse response = (WebResponse) target.getHeaderResponse().getResponse();
-                        response.setHeader("imageUrl", SummernoteStoredImageResourceReference.SUMMERNOTE_MOUNT_PATH
+                        final String storageId = getStorageId();
+                        final CharSequence imageReferenceUrl = urlFor(new SummernoteStoredImageResourceReference(storageId), null);
+                        response.setHeader("imageUrl", imageReferenceUrl
                                                        + "?image=" + Base64.encodeBase64String(imageName.getBytes()));
                         fileItemsMap.put(imageName, fileItem);
                     } catch (IOException e) {
@@ -212,4 +214,8 @@ public class SummernoteEditor extends FormComponent<String> {
         }
     }
 
+    /**
+     * @return The id of the storage used for Summernote image uploads
+     */
+    protected abstract String getStorageId();
 }

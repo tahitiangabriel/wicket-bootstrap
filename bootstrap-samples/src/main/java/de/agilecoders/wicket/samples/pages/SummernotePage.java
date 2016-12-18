@@ -45,7 +45,12 @@ public class SummernotePage extends BasePage {
 
         final IModel<String> summernoteModel = Model.of("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam \r\nnvoluptua.");
 
-        final SummernoteEditor summernoteEditor = new SummernoteEditor("summernote" + idSuffix, summernoteModel, summernoteConfig);
+        final SummernoteEditor summernoteEditor = new SummernoteEditor("summernote" + idSuffix, summernoteModel, summernoteConfig) {
+            @Override
+            protected String getStorageId() {
+                return WicketApplication.STORAGE_ID;
+            }
+        };
         form.add(summernoteEditor);
         form.add(new SummernoteAjaxButton("submit" + idSuffix, summernoteEditor) {
             private static final long serialVersionUID = 1L;

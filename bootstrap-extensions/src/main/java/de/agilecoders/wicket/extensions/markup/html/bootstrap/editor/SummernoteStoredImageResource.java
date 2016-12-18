@@ -35,6 +35,6 @@ public class SummernoteStoredImageResource extends DynamicImageResource {
      */
     @Override
     protected byte[] getImageData(Attributes attributes) {
-	return SummernoteConfig.getStorage(storageId).getContent(imageName);
+	    return SummernoteConfig.getStorage(storageId).getContent(imageName);
     }
 }

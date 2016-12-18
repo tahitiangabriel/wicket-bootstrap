@@ -5,19 +5,19 @@ import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.StringValue;
 
 /**
  * Provides the image data by the given storage id
  *
  * @author Tobias Soloschenko
- *
  */
 public class SummernoteStoredImageResourceReference extends ResourceReference {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String SUMMERNOTE_MOUNT_PATH = "/summernoteimages";
+    public static final String SUMMERNOTE_MOUNT_PATH = "/wicket/bootstrap/summernote/images";
 
     private String storageId;
 
@@ -28,8 +28,8 @@ public class SummernoteStoredImageResourceReference extends ResourceReference {
      *            the id of the file storage
      */
     public SummernoteStoredImageResourceReference(String storageId) {
-        super("summernoteimages");
-        this.storageId = storageId;
+        super("summernote/images/"+storageId);
+        this.storageId = Args.notEmpty(storageId, "storageId");
     }
 
     /**
