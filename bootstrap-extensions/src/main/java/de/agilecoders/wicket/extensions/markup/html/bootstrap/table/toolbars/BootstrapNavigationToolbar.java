@@ -1,13 +1,15 @@
 package de.agilecoders.wicket.extensions.markup.html.bootstrap.table.toolbars;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.navigation.BootstrapPagingNavigator;
-import de.agilecoders.wicket.core.markup.html.bootstrap.navigation.BootstrapPagingNavigator.Size;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.navigation.BootstrapNavigatorLabel;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.AbstractReadOnlyModel;
+
+import de.agilecoders.wicket.core.markup.html.bootstrap.navigation.BootstrapPagingNavigator;
+import de.agilecoders.wicket.core.markup.html.bootstrap.navigation.BootstrapPagingNavigator.Size;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.navigation.BootstrapNavigatorLabel;
 
 /**
  * Bootstrap styled toolbar that displays links used to navigate the pages of the datatable as well as a message
@@ -17,75 +19,85 @@ import org.apache.wicket.markup.html.panel.Panel;
  */
 public class BootstrapNavigationToolbar extends AbstractToolbar {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private static final String _PAGING_NAVIGATOR_ID = "navigator";
-	private static final String _NAVIGATOR_LABEL_PANEL_ID = "navigatorLabelPanel";
+    private static final String _PAGING_NAVIGATOR_ID = "navigator";
+    private static final String _NAVIGATOR_LABEL_PANEL_ID = "navigatorLabelPanel";
 
-	/**
-	 * Construct.
-	 *
-	 * Default Size will be used.
-	 *
-	 * @param table the pageable table
-	 */
-	public BootstrapNavigationToolbar(final DataTable<?, ?> table) {
-		this(table, Size.Default);
-	}
+    /**
+     * Construct.
+     *
+     * Default Size will be used.
+     *
+     * @param table the pageable table
+     */
+    public BootstrapNavigationToolbar(final DataTable<?, ?> table) {
+        this(table, Size.Default);
+    }
 
-	/**
-	 * Construct.
-	 *
-	 * @param table the pageable table
-	 * @param size paging navigator size to use
-	 */
-	public BootstrapNavigationToolbar(final DataTable<?, ?> table, BootstrapPagingNavigator.Size size) {
-		super(table);
+    /**
+     * Construct.
+     *
+     * @param table the pageable table
+     * @param size paging navigator size to use
+     */
+    public BootstrapNavigationToolbar(final DataTable<?, ?> table, final BootstrapPagingNavigator.Size size) {
+        super(table);
 
-		WebMarkupContainer span = new WebMarkupContainer("span");
-		add(span);
-		span.add(AttributeModifier.replace("colspan", () -> String.valueOf(table.getColumns().size())));
-		span.add(newPagingNavigator(_PAGING_NAVIGATOR_ID, table, size));
-		span.add(newNavigatorLabel(_NAVIGATOR_LABEL_PANEL_ID, table, size));
-	}
+        final WebMarkupContainer span = new WebMarkupContainer("span");
+        add(span);
+        span.add(AttributeModifier.replace("colspan", new AbstractReadOnlyModel<String>() {
+            private static final long serialVersionUID = 1L;
 
-	/**
-	 * Factory method used to create the paging navigator that will be used by the datatable
-	 *
-	 * @param navigatorId component id the navigator should be created with
-	 * @param table dataview used by datatable
-	 * @param size paging navigator size to use
-	 * @return paging navigator that will be used to navigate the data table
-	 */
-	protected BootstrapPagingNavigator newPagingNavigator(final String navigatorId, final DataTable<?, ?> table, final BootstrapPagingNavigator.Size size) {
-		return new BootstrapPagingNavigator(navigatorId, table) {
+            @Override
+            public String getObject() {
+                return String.valueOf(table.getColumns().size());
+            }
+        }));
 
-			@Override
-			public Size getSize() {
+        span.add(newPagingNavigator(_PAGING_NAVIGATOR_ID, table, size));
+        span.add(newNavigatorLabel(_NAVIGATOR_LABEL_PANEL_ID, table, size));
+    }
 
-				return size;
-			}
-		};
-	}
+    /**
+     * Factory method used to create the paging navigator that will be used by the datatable
+     *
+     * @param navigatorId component id the navigator should be created with
+     * @param table dataview used by datatable
+     * @param size paging navigator size to use
+     * @return paging navigator that will be used to navigate the data table
+     */
+    protected BootstrapPagingNavigator newPagingNavigator(final String navigatorId, final DataTable<?, ?> table,
+            final BootstrapPagingNavigator.Size size) {
+        return new BootstrapPagingNavigator(navigatorId, table) {
 
-	/**
-	 * Factory method used to create the navigator label that will be used by the datatable
-	 *
-	 * @param navigatorId component id navigator label should be created with
-	 * @param table dataview used by datatable
-	 * @param size paging navigator size to use
-	 * @return navigator label that will be used to navigate the data table
-	 *
-	 */
-	protected Panel newNavigatorLabel(final String navigatorId, final DataTable<?, ?> table, final BootstrapPagingNavigator.Size size) {
-		return new BootstrapNavigatorLabel(navigatorId, table, size);
-	}
+            @Override
+            public Size getSize() {
 
-	/** {@inheritDoc} */
-	@Override
-	protected void onConfigure() {
-		super.onConfigure();
-		setVisible(getTable().getPageCount() > 1);
-	}
+                return size;
+            }
+        };
+    }
+
+    /**
+     * Factory method used to create the navigator label that will be used by the datatable
+     *
+     * @param navigatorId component id navigator label should be created with
+     * @param table dataview used by datatable
+     * @param size paging navigator size to use
+     * @return navigator label that will be used to navigate the data table
+     *
+     */
+    protected Panel newNavigatorLabel(final String navigatorId, final DataTable<?, ?> table,
+            final BootstrapPagingNavigator.Size size) {
+        return new BootstrapNavigatorLabel(navigatorId, table, size);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void onConfigure() {
+        super.onConfigure();
+        setVisible(getTable().getPageCount() > 1);
+    }
 
 }

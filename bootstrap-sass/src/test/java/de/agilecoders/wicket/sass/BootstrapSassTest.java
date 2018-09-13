@@ -1,6 +1,12 @@
 package de.agilecoders.wicket.sass;
 
-import de.agilecoders.wicket.webjars.WicketWebjars;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.net.URI;
+import java.net.URL;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -9,22 +15,15 @@ import org.apache.wicket.request.resource.IResourceReferenceFactory;
 import org.apache.wicket.request.resource.ResourceReferenceRegistry;
 import org.apache.wicket.util.file.File;
 import org.apache.wicket.util.tester.WicketTester;
+import org.hamcrest.text.IsEqualIgnoringWhiteSpace;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.net.URI;
-import java.net.URL;
-
+import de.agilecoders.wicket.webjars.WicketWebjars;
 import io.bit3.jsass.Options;
 import io.bit3.jsass.type.SassString;
 import io.bit3.jsass.type.SassValue;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * TODO miha: document class purpose
@@ -55,68 +54,72 @@ public class BootstrapSassTest {
 
     @Test
     public void importWebContext() throws Exception {
-        WebApplication application = tester.getApplication();
-        URI uri = getClass().getResource("/de/agilecoders/wicket/sass/test/webContextImported.scss").toURI();
-        File file = new File(uri);
-        File contextRoot = file.getParentFolder();
-        // setup folder /.../bootstrap-sass/src/test/resources/de/agilecoders/wicket/sass/test as a root for the ServletContext
+        final WebApplication application = tester.getApplication();
+        final URI uri = getClass().getResource("/de/agilecoders/wicket/sass/test/webContextImported.scss").toURI();
+        final File file = new File(uri);
+        final File contextRoot = file.getParentFolder();
+        // setup folder /.../bootstrap-sass/src/test/resources/de/agilecoders/wicket/sass/test as a root for the
+        // ServletContext
         application.setServletContext(new MockServletContext(application, contextRoot.getAbsolutePath()));
 
-        SassCacheManager sass = SassCacheManager.get();
-        URL res = Thread.currentThread().getContextClassLoader().getResource("importWebContext.scss");
+        final SassCacheManager sass = SassCacheManager.get();
+        final URL res = Thread.currentThread().getContextClassLoader().getResource("importWebContext.scss");
 
-        SassSource sassSource = sass.getSassContext(res, null);
-        String css = sass.getCss(sassSource);
-        assertThat(css, is(equalTo(".rule {\n  background: #999; }\n")));
+        final SassSource sassSource = sass.getSassContext(res, null);
+        final String css = sass.getCss(sassSource);
+        assertThat(css, IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace(".rule {\n  background: #999; }\n"));
     }
 
     /**
      * Tests with {@link ContextRelativeSassResourceReference}
      *
      * https://github.com/l0rdn1kk0n/wicket-bootstrap/issues/524
+     *
      * @throws Exception
      */
     @Test
     public void importServletContextRelative() throws Exception {
-        WebApplication application = tester.getApplication();
-        URI uri = getClass().getResource("/servlet/context/root/").toURI();
-        File contextRoot = new File(uri);
+        final WebApplication application = tester.getApplication();
+        final URI uri = getClass().getResource("/servlet/context/root/").toURI();
+        final File contextRoot = new File(uri);
         // setup folder /.../bootstrap-sass/src/test/resources/servlet/context/root as a root for the ServletContext
         application.setServletContext(new MockServletContext(application, contextRoot.getAbsolutePath()));
 
-//        tester.startPage(HomePage.class);
-        tester.executeUrl("./wicket/resource/org.apache.wicket.Application/relative.scss?--" + ContextRelativeSassResourceReference.CONTEXT_RELATIVE_SASS_REFERENCE_VARIATION);
+        // tester.startPage(HomePage.class);
+        tester.executeUrl("./wicket/resource/org.apache.wicket.Application/relative.scss?--"
+                + ContextRelativeSassResourceReference.CONTEXT_RELATIVE_SASS_REFERENCE_VARIATION);
         tester.assertContains("sass-servlet-relative-cls");
         tester.assertContains("color: #333;");
     }
 
     @Test
     public void importWebJars() throws Exception {
-        SassCacheManager sass = SassCacheManager.get();
-        URL res = Thread.currentThread().getContextClassLoader().getResource("import.scss");
+        final SassCacheManager sass = SassCacheManager.get();
+        final URL res = Thread.currentThread().getContextClassLoader().getResource("import.scss");
 
-        SassSource sassSource = sass.getSassContext(res, null);
-        String css = sass.getCss(sassSource);
-        assertThat(css, is(equalTo(".rule {\n  background: #007bff; }\n")));
+        final SassSource sassSource = sass.getSassContext(res, null);
+        final String css = sass.getCss(sassSource);
+        assertThat(css, IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace(".rule {\n  background: #007bff; }\n"));
     }
 
     @Test
     public void importClasspath() {
-        SassCacheManager sass = SassCacheManager.get();
-        URL res = Thread.currentThread().getContextClassLoader().getResource("importClasspath.scss");
+        final SassCacheManager sass = SassCacheManager.get();
+        final URL res = Thread.currentThread().getContextClassLoader().getResource("importClasspath.scss");
 
-        SassSource sassSource = sass.getSassContext(res, null);
-        String css = sass.getCss(sassSource);
-        assertThat(css, is(equalTo(".classPathImported {\n  color: #333; }\n")));
+        final SassSource sassSource = sass.getSassContext(res, null);
+        final String css = sass.getCss(sassSource);
+        assertThat(css,
+                IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace(".classPathImported {\n  color: #333; }\n"));
     }
 
     @Test
     public void importPackage() {
-        SassCacheManager sass = SassCacheManager.get();
-        URL res = BootstrapSassTest.class.getResource("package-dependency-1.scss");
+        final SassCacheManager sass = SassCacheManager.get();
+        final URL res = BootstrapSassTest.class.getResource("package-dependency-1.scss");
 
-        SassSource sassSource = sass.getSassContext(res, BootstrapSassTest.class.getName());
-        String css = sass.getCss(sassSource);
+        final SassSource sassSource = sass.getSassContext(res, BootstrapSassTest.class.getName());
+        final String css = sass.getCss(sassSource);
         assertThat(css, containsString("package1"));
         assertThat(css, containsString("package2"));
         assertThat(css, containsString("package3"));
@@ -124,19 +127,19 @@ public class BootstrapSassTest {
 
     @Test
     public void importPartials() {
-        SassCacheManager sass = SassCacheManager.get();
-        URL res = BootstrapSassTest.class.getResource("partial-root.scss");
+        final SassCacheManager sass = SassCacheManager.get();
+        final URL res = BootstrapSassTest.class.getResource("partial-root.scss");
 
-        SassSource sassSource = sass.getSassContext(res, BootstrapSassTest.class.getName());
-        String css = sass.getCss(sassSource);
+        final SassSource sassSource = sass.getSassContext(res, BootstrapSassTest.class.getName());
+        final String css = sass.getCss(sassSource);
         assertThat(css, containsString("root-cls"));
         assertThat(css, containsString("partial"));
     }
 
     @Test
     public void sassResourceReferenceFactoryIsInstalled() {
-        ResourceReferenceRegistry registry = tester.getApplication().getResourceReferenceRegistry();
-        IResourceReferenceFactory referenceFactory = registry.getResourceReferenceFactory();
+        final ResourceReferenceRegistry registry = tester.getApplication().getResourceReferenceRegistry();
+        final IResourceReferenceFactory referenceFactory = registry.getResourceReferenceFactory();
         assertThat(referenceFactory, is(instanceOf(SassResourceReferenceFactory.class)));
     }
 
@@ -144,17 +147,17 @@ public class BootstrapSassTest {
     public void usesCustomSassCompilerConfigurationFactoryWhenProvided() {
         // tests the invocation of a custom sass function that will be registered within the configuration factory
         BootstrapSass.install(Application.get(), () -> {
-            Options config = new Options();
+            final Options config = new Options();
             config.getFunctionProviders().add(new TestFunctions());
             return config;
         });
 
-        SassCacheManager sass = SassCacheManager.get();
-        URL res = BootstrapSassTest.class.getResource("resources/custom-functions.scss");
+        final SassCacheManager sass = SassCacheManager.get();
+        final URL res = BootstrapSassTest.class.getResource("resources/custom-functions.scss");
 
-        SassSource sassSource = sass.getSassContext(res, null);
-        String css = sass.getCss(sassSource);
-        assertThat(css, is(".my-class {\n  color: blue; }\n"));
+        final SassSource sassSource = sass.getSassContext(res, null);
+        final String css = sass.getCss(sassSource);
+        assertThat(css, IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace(".my-class {\n  color: blue; }\n"));
     }
 
     public static class TestFunctions {

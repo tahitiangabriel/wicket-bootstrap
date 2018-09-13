@@ -1,13 +1,12 @@
 package de.agilecoders.wicket.extensions.markup.html.bootstrap.editor;
 
-import org.apache.wicket.markup.head.HeaderItem;
-
 import java.util.List;
 
 import org.apache.wicket.Application;
+import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.request.resource.ResourceReference;
-import org.apache.wicket.resource.DynamicJQueryResourceReference;
+import org.apache.wicket.resource.JQueryResourceReference;
 
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 
@@ -30,24 +29,24 @@ public class SummernoteEditorJavaScriptReference extends WebjarsJavaScriptResour
      * @return the single instance of the resource reference
      */
     public static SummernoteEditorJavaScriptReference instance() {
-	return INSTANCE;
+        return INSTANCE;
     }
 
     /**
      * Private constructor.
      */
     private SummernoteEditorJavaScriptReference() {
-	super("summernote/current/dist/summernote-bs4.js");
+        super("summernote/current/dist/summernote-bs4.js");
     }
 
     @Override
     public List<HeaderItem> getDependencies() {
-        List<HeaderItem> dependencies = super.getDependencies();
+        final List<HeaderItem> dependencies = super.getDependencies();
         ResourceReference jQueryResourceReference;
         if (Application.exists()) {
             jQueryResourceReference = Application.get().getJavaScriptLibrarySettings().getJQueryReference();
         } else {
-            jQueryResourceReference = DynamicJQueryResourceReference.getV2();
+            jQueryResourceReference = JQueryResourceReference.get();
         }
         dependencies.add(JavaScriptHeaderItem.forReference(jQueryResourceReference));
         return dependencies;

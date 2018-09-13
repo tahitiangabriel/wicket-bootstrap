@@ -1,6 +1,31 @@
 package de.agilecoders.wicket.samples.pages;
 
+import java.util.List;
+
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.PasswordTextField;
+import org.apache.wicket.markup.html.form.RequiredTextField;
+import org.apache.wicket.markup.html.form.StatelessForm;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.repeater.RepeatingView;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.CssResourceReference;
+import org.apache.wicket.util.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wicketstuff.annotation.mount.MountPath;
+
 import com.google.common.collect.Lists;
+
 import de.agilecoders.wicket.core.markup.html.bootstrap.block.Code;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
@@ -34,29 +59,6 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.ladda.LaddaAjaxLin
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.ladda.LaddaBehavior;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.tour.TourBehavior;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.tour.TourStep;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.markup.head.CssHeaderItem;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.PasswordTextField;
-import org.apache.wicket.markup.html.form.RequiredTextField;
-import org.apache.wicket.markup.html.form.StatelessForm;
-import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.repeater.RepeatingView;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.CssResourceReference;
-import org.apache.wicket.util.time.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.wicketstuff.annotation.mount.MountPath;
-
-import java.util.List;
 
 /**
  * The {@code ExtensionsPage}
@@ -74,68 +76,59 @@ public class ExtensionsPage extends BasePage {
      * @param parameters
      *            the current page parameters.
      */
-    public ExtensionsPage(PageParameters parameters) {
+    public ExtensionsPage(final PageParameters parameters) {
         super(parameters);
 
-        List<Html5Player.IVideo> videos = Lists.<Html5Player.IVideo> newArrayList(new Video(
-            "https://archive.org/download/CopyingIsNotTheft/CINT_Nik_H264_720.ogv", "video/ogg"),
-            new Video("https://archive.org/download/CopyingIsNotTheft/CINT_Nik_H264_720_512kb.mp4",
-                "video/mp4"));
+        final List<Html5Player.IVideo> videos = Lists.<Html5Player.IVideo> newArrayList(
+                new Video("https://archive.org/download/CopyingIsNotTheft/CINT_Nik_H264_720.ogv", "video/ogg"),
+                new Video("https://archive.org/download/CopyingIsNotTheft/CINT_Nik_H264_720_512kb.mp4", "video/mp4"));
         add(new Html5Player("video", Model.ofList(videos)));
 
-        add(new Code(
-                "video-code",
+        add(new Code("video-code",
                 Model.of("List<Html5Player.IVideo> videos = Lists.<Html5Player.IVideo>newArrayList(\n"
                         + "\t\tnew Video(\"video.ogv\", \"video/ogg\"),\n"
-                        + "\t\tnew Video(\"video.mp4\", \"video/mp4\")\n"
-                        + ");\n"
+                        + "\t\tnew Video(\"video.mp4\", \"video/mp4\")\n" + ");\n"
                         + "add(new Html5Player(\"video\", Model.ofList(videos)));")));
 
         add(new Html5Player("video-custom", Model.ofList(videos),
-                new Html5VideoConfig().showProgressBar(false)
-                        .autoHideControlBar(false)).setWidth(680)
-                .setHeight(360));
-        add(new Code(
-                "video-custom-code",
+                new Html5VideoConfig().showProgressBar(false).autoHideControlBar(false)).setWidth(680).setHeight(360));
+        add(new Code("video-custom-code",
                 Model.of("List<Html5Player.IVideo> videos = Lists.<Html5Player.IVideo>newArrayList(\n"
                         + "\t\tnew Video(\"video.ogv\", \"video/ogg\"),\n"
-                        + "\t\tnew Video(\"video.mp4\", \"video/mp4\")\n"
-                        + ");\n"
+                        + "\t\tnew Video(\"video.mp4\", \"video/mp4\")\n" + ");\n"
                         + "add(new Html5Player(\"video\", Model.ofList(videos),\n"
                         + "\tnew Html5VideoConfig().showProgressBar(false).autoHideControlBar(false))\n"
                         + "\t\t.setWidth(680).setHeight(360));")));
 
-        Modal<String> draggableModal = new TextContentModal(
-                "draggable-modal",
-                Model.of("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.")) {
+        final Modal<String> draggableModal = new TextContentModal("draggable-modal", Model.of(
+                "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.")) {
             @Override
-            protected WebMarkupContainer createDialog(String id) {
-                WebMarkupContainer dialog = super.createDialog(id);
+            protected WebMarkupContainer createDialog(final String id) {
+                final WebMarkupContainer dialog = super.createDialog(id);
                 dialog.add(new Draggable(new DraggableConfig().withHandle(".modal-header").withCursor("move")));
                 return dialog;
             }
 
             @Override
-            public void renderHead(IHeaderResponse response) {
+            public void renderHead(final IHeaderResponse response) {
                 super.renderHead(response);
                 response.render(JQueryUICssReference.asHeaderItem());
-                response.render(CssHeaderItem.forReference(new CssResourceReference(JQueryUICssReference.class, "css/resizable.css")));
+                response.render(CssHeaderItem
+                        .forReference(new CssResourceReference(JQueryUICssReference.class, "css/resizable.css")));
             }
         };
         draggableModal.add(new Resizable().withChildSelector(".modal-content"));
         draggableModal.setUseKeyboard(true).addCloseButton();
         draggableModal.setFadeIn(false);
-        Label draggableButton = new Label("open-draggable", "Open Modal Dialog");
+        final Label draggableButton = new Label("open-draggable", "Open Modal Dialog");
         draggableModal.addOpenerAttributesTo(draggableButton);
         add(draggableModal, draggableButton, new Code("draggable-code", Model.of("")));
 
         addTour();
-        add(new Icon("html5-colored", OpenWebIconType.html5_colored), new Icon("apml", OpenWebIconType.apml), new Icon(
-            "feed", OpenWebIconType.feed_colored));
-        add(new Icon("html5", OpenWebIconType.html5),
-            new Code(
-                "openwebicon-code",
-                Model.of("response.render(JavaScriptHeaderItem.forReference(OpenWebIconsCssReference.instance()));\n\nadd(new Icon(\"html5\", OpenWebIconType.html5));")));
+        add(new Icon("html5-colored", OpenWebIconType.html5_colored), new Icon("apml", OpenWebIconType.apml),
+                new Icon("feed", OpenWebIconType.feed_colored));
+        add(new Icon("html5", OpenWebIconType.html5), new Code("openwebicon-code", Model.of(
+                "response.render(JavaScriptHeaderItem.forReference(OpenWebIconsCssReference.instance()));\n\nadd(new Icon(\"html5\", OpenWebIconType.html5));")));
 
         addInputMaskDemo();
 
@@ -150,14 +143,14 @@ public class ExtensionsPage extends BasePage {
     }
 
     private void pwstrengthSample() {
-        StatelessForm<Void> pwstrengthForm = new StatelessForm<Void>("pwstrengthForm");
+        final StatelessForm<Void> pwstrengthForm = new StatelessForm<>("pwstrengthForm");
 
-        RequiredTextField<String> username = new RequiredTextField<String>("username", Model.of(""));
-        PasswordTextField password = new PasswordTextField("password", Model.of(""));
-        PasswordStrengthConfig config = new PasswordStrengthConfig();
+        final RequiredTextField<String> username = new RequiredTextField<>("username", Model.of(""));
+        final PasswordTextField password = new PasswordTextField("password", Model.of(""));
+        final PasswordStrengthConfig config = new PasswordStrengthConfig();
         config.withDebug(true).withMinChar(3).withUsernameField(username)
-        // .withShowPopover(true)
-            .withShowVerdicts(true).withUseVerdictCssClass(true).withShowErrors(true);
+                // .withShowPopover(true)
+                .withShowVerdicts(true).withUseVerdictCssClass(true).withShowErrors(true);
 
         password.add(new PasswordStrengthBehavior(config));
 
@@ -170,25 +163,17 @@ public class ExtensionsPage extends BasePage {
         final NotificationPanel feedback = new NotificationPanel("spinnerFeedback");
         feedback.setOutputMarkupId(true);
         final Number minValue = 20d;
-        SpinnerConfig config = new SpinnerConfig();
-        config
-            .withPrefix("pre")
-            .withDecimals(2)
-            .withPostfix("post")
-            .withMin(minValue)
-            .withMax(30)
-            .withStep(.2)
-            .withVerticalbuttons(true)
-            .withBootstap(2)
-            .withInitVal(24);
-        Spinner<Double> spinner = new Spinner<Double>("spinner", config) {
+        final SpinnerConfig config = new SpinnerConfig();
+        config.withPrefix("pre").withDecimals(2).withPostfix("post").withMin(minValue).withMax(30).withStep(.2)
+                .withVerticalbuttons(true).withBootstap(2).withInitVal(24);
+        final Spinner<Double> spinner = new Spinner<Double>("spinner", config) {
             @Override
             protected boolean wantMinNotification() {
                 return true;
             }
 
             @Override
-            protected void onMin(AjaxRequestTarget target) {
+            protected void onMin(final AjaxRequestTarget target) {
                 super.onMin(target);
                 info("Reached the configured min value of " + minValue);
                 target.add(feedback);
@@ -200,9 +185,9 @@ public class ExtensionsPage extends BasePage {
     private void ratingSample() {
         final NotificationPanel feedback = new NotificationPanel("ratingFeedback");
         feedback.setOutputMarkupId(true);
-        RatingConfig config = new RatingConfig();
+        final RatingConfig config = new RatingConfig();
         config.withStart(0).withStop(10).withStep(2).withFilled("fa fa-star fa-3x").withEmpty("fa fa-star-o fa-3x");
-        RatingField<String> rating = new RatingField<String>("rating", Model.of(""), config) {
+        final RatingField<String> rating = new RatingField<String>("rating", Model.of(""), config) {
 
             private static final long serialVersionUID = 1L;
 
@@ -211,7 +196,8 @@ public class ExtensionsPage extends BasePage {
                 return true;
             }
 
-            protected void onChange(AjaxRequestTarget target) {
+            @Override
+            protected void onChange(final AjaxRequestTarget target) {
                 super.onChange(target);
                 info("Changed rating to " + getModelObject());
                 target.add(feedback);
@@ -224,12 +210,12 @@ public class ExtensionsPage extends BasePage {
         final NotificationPanel feedback = new NotificationPanel("animationFeedback");
         feedback.setOutputMarkupId(true).add(new AnimatedBehavior(Animation.bounceInLeft));
 
-        AjaxLink<Void> animate = new AjaxLink<Void>("startAnimation") {
+        final AjaxLink<Void> animate = new AjaxLink<Void>("startAnimation") {
 
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(final AjaxRequestTarget target) {
                 info("Nice feedback transition!");
                 target.add(feedback);
             }
@@ -238,95 +224,90 @@ public class ExtensionsPage extends BasePage {
     }
 
     private void laddaButton() {
-        Form form = new Form("laddaForm");
+        final Form form = new Form("laddaForm");
         add(form);
 
-        LaddaAjaxButton laddaButton = new LaddaAjaxButton("laddaButton", Model.of("Button, 3secs"), form, Buttons.Type.Info) {
+        final LaddaAjaxButton laddaButton = new LaddaAjaxButton("laddaButton", Model.of("Button, 3secs"), form,
+                Buttons.Type.Info) {
             @Override
-            protected void onSubmit(AjaxRequestTarget target) {
-                super.onSubmit(target);
+            protected void onSubmit(final AjaxRequestTarget target, final Form<?> paramForm) {
+                super.onSubmit(target, paramForm);
 
                 Duration.seconds(3).sleep();
             }
+
         };
         laddaButton.setSize(Buttons.Size.Small);
 
-        LaddaAjaxLink<String> laddaLink = new LaddaAjaxLink<String>("laddaLink", null,
-            Buttons.Type.Success, Model.of("Link, 2secs")) {
+        final LaddaAjaxLink<String> laddaLink = new LaddaAjaxLink<String>("laddaLink", null, Buttons.Type.Success,
+                Model.of("Link, 2secs")) {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(final AjaxRequestTarget target) {
                 Duration.seconds(2).sleep();
             }
         };
         laddaLink.setEffect(LaddaBehavior.Effect.EXPAND_LEFT).setSize(Buttons.Size.Medium);
 
-        form.add(new Code("linkCode", Model.of("laddaLink = new LaddaAjaxLink<String>(\"laddaLink\", Model.of(\"Link, 2secs\"), Buttons.Type.Success) {\n"
-                                               + "    @Override public void onClick(AjaxRequestTarget target) {\n"
-                                               + "        Duration.seconds(2).sleep();\n"
-                                               + "    }\n"
-                                               + "};\n"
-                                               + "laddaLink.setEffect(LaddaBehavior.Effect.EXPAND_LEFT).setSize(Buttons.Size.Medium);")));
+        form.add(new Code("linkCode", Model.of(
+                "laddaLink = new LaddaAjaxLink<String>(\"laddaLink\", Model.of(\"Link, 2secs\"), Buttons.Type.Success) {\n"
+                        + "    @Override public void onClick(AjaxRequestTarget target) {\n"
+                        + "        Duration.seconds(2).sleep();\n" + "    }\n" + "};\n"
+                        + "laddaLink.setEffect(LaddaBehavior.Effect.EXPAND_LEFT).setSize(Buttons.Size.Medium);")));
 
         form.add(laddaButton, laddaLink);
     }
 
     private void confirmationButton() {
-        Form form = new Form("confirmationForm");
+        final Form form = new Form("confirmationForm");
         add(form);
 
         final NotificationPanel feedback = new NotificationPanel("confirmationFeedback");
         feedback.setOutputMarkupId(true);
         add(feedback);
 
-        AjaxButton confirmationButton = new AjaxButton("confirmationButton", Model.of("Button")) {
+        final AjaxButton confirmationButton = new AjaxButton("confirmationButton", Model.of("Button")) {
             @Override
-            protected void onSubmit(AjaxRequestTarget target) {
-                super.onSubmit(target);
+            protected void onSubmit(final AjaxRequestTarget target, final Form<?> paramForm) {
+                super.onSubmit(target, paramForm);
 
                 info("Invoked button's #onSubmit()!");
                 target.add(feedback);
             }
         };
-        confirmationButton.add(new ConfirmationBehavior(new ConfirmationConfig()
-            .withTitle("My title?").withSingleton(true).withPopout(true).withBtnOkLabel("Confirm")
-        ));
+        confirmationButton.add(new ConfirmationBehavior(new ConfirmationConfig().withTitle("My title?")
+                .withSingleton(true).withPopout(true).withBtnOkLabel("Confirm")));
 
-        AjaxLink<String> confirmationLink = new AjaxLink<String>("confirmationLink", Model.of("Link")) {
+        final AjaxLink<String> confirmationLink = new AjaxLink<String>("confirmationLink", Model.of("Link")) {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(final AjaxRequestTarget target) {
                 info("Invoked link's #onClick()!");
                 target.add(feedback);
             }
         };
         confirmationLink.add(new ConfirmationBehavior(new ConfirmationConfig().withBtnCancelLabel("Reject")));
 
-        form.add(new Code(
-            "linkCode",
-            Model.of("confirmationLink = new AjaxLink<String>(\"confirmationLink\", Model.of(\"Link\")) {\n"
-                     + "    @Override public void onClick(AjaxRequestTarget target) {\n"
-                     + "        info(\"Invoked link's #onClick()!\");\n"
-                     + "        target.add(feedback);\n"
-                     + "    }\n"
-                     + "};\n"
-                     + "confirmationLink.add(new ConfirmationBehavior(new ConfirmationConfig().withBtnCancelLabel(\"Reject\")));\n"
-            )));
+        form.add(new Code("linkCode",
+                Model.of("confirmationLink = new AjaxLink<String>(\"confirmationLink\", Model.of(\"Link\")) {\n"
+                        + "    @Override public void onClick(AjaxRequestTarget target) {\n"
+                        + "        info(\"Invoked link's #onClick()!\");\n" + "        target.add(feedback);\n"
+                        + "    }\n" + "};\n"
+                        + "confirmationLink.add(new ConfirmationBehavior(new ConfirmationConfig().withBtnCancelLabel(\"Reject\")));\n")));
 
         form.add(confirmationButton, confirmationLink);
     }
 
     @Override
-    public void renderHead(IHeaderResponse response) {
+    public void renderHead(final IHeaderResponse response) {
         super.renderHead(response);
 
         response.render(CssHeaderItem.forReference(OpenWebIconsCssReference.instance()));
-		response.render(CssHeaderItem.forReference(FontAwesomeCssReference.instance()));
+        response.render(CssHeaderItem.forReference(FontAwesomeCssReference.instance()));
 
     }
 
     private void addInputMaskDemo() {
-        TextField<String> textField = new TextField<>("inputMask",
-                Model.of("l0rdn1kk0n"));
-        InputMaskBehavior inputMask = new InputMaskBehavior("a9aaa9aa9a");
+        final TextField<String> textField = new TextField<>("inputMask", Model.of("l0rdn1kk0n"));
+        final InputMaskBehavior inputMask = new InputMaskBehavior("a9aaa9aa9a");
         textField.add(inputMask);
         add(textField);
     }
@@ -335,51 +316,38 @@ public class ExtensionsPage extends BasePage {
      * Demo for TourBehavior. Issue #116
      */
     private void addTour() {
-        RepeatingView view = new RepeatingView("tourDemo");
+        final RepeatingView view = new RepeatingView("tourDemo");
         add(view);
 
-        Label stepOne = new Label(view.newChildId(), "Step One");
+        final Label stepOne = new Label(view.newChildId(), "Step One");
         view.add(stepOne);
 
-        Label stepTwo = new Label(view.newChildId(), "Step Two");
+        final Label stepTwo = new Label(view.newChildId(), "Step Two");
         view.add(stepTwo);
 
-        Label stepThree = new Label(view.newChildId(), "Step Three");
+        final Label stepThree = new Label(view.newChildId(), "Step Three");
         view.add(stepThree);
 
-        TourBehavior tourBehavior = new TourBehavior() {
+        final TourBehavior tourBehavior = new TourBehavior() {
             @Override
             protected CharSequence createExtraConfig() {
-            return
-                  "    $('<div class=\"alert alert-info\">\\\n"
-                + "      <button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>\\\n"
-                + "      <a href=\"\" class=\"restart\" style=\"color:white\">Start the demo tour.</a>\\\n"
-                + "      </div>').prependTo(\".tourContent\").alert();\n" + "  \n" + "\n"
-                + "  $(\".restart\").click(function (e) {\n" + "    e.preventDefault();\n"
-                + "    tour.restart();\n" + "    $(this).parents(\".alert\").alert(\"close\");\n" + "  });";
+                return "    $('<div class=\"alert alert-info\">\\\n"
+                        + "      <button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>\\\n"
+                        + "      <a href=\"\" class=\"restart\" style=\"color:white\">Start the demo tour.</a>\\\n"
+                        + "      </div>').prependTo(\".tourContent\").alert();\n" + "  \n" + "\n"
+                        + "  $(\".restart\").click(function (e) {\n" + "    e.preventDefault();\n"
+                        + "    tour.restart();\n" + "    $(this).parents(\".alert\").alert(\"close\");\n" + "  });";
             }
         };
-        tourBehavior
-                .addStep(new TourStep()
-                        .title(Model.of("Step One Title"))
-                        .element(stepOne)
-                        .content(
-                                Model.of("Some longer help content <strong> for step <span style='color: red'>1</span>.")));
-        tourBehavior
-                .addStep(new TourStep()
-                        .title(new ResourceModel("tour.step.two"))
-                        .element(stepTwo)
-                        .placement(TooltipConfig.Placement.left)
-                        .content(
-                                Model.of("Some longer help content <strong> for step <span style='color: red'>2</span>."))
-                        .backdrop(true));
-        tourBehavior
-                .addStep(new TourStep()
-                        .title(Model.of("Step Three Title"))
-                        .element(stepThree)
-                        .placement(TooltipConfig.Placement.left)
-                        .content(
-                                Model.of("Some longer help content <strong> for step <span style='color: red'>3</span>.")));
+        tourBehavior.addStep(new TourStep().title(Model.of("Step One Title")).element(stepOne)
+                .content(Model.of("Some longer help content <strong> for step <span style='color: red'>1</span>.")));
+        tourBehavior.addStep(new TourStep().title(new ResourceModel("tour.step.two")).element(stepTwo)
+                .placement(TooltipConfig.Placement.left)
+                .content(Model.of("Some longer help content <strong> for step <span style='color: red'>2</span>."))
+                .backdrop(true));
+        tourBehavior.addStep(new TourStep().title(Model.of("Step Three Title")).element(stepThree)
+                .placement(TooltipConfig.Placement.left)
+                .content(Model.of("Some longer help content <strong> for step <span style='color: red'>3</span>.")));
         view.add(tourBehavior);
     }
 

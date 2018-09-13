@@ -6,14 +6,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.agilecoders.wicket.core.util.Attributes;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.BootstrapDatepickerJsReference;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.BootstrapDatepickerLangJsReference;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.BootstrapDatepickerReference;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
-import org.apache.wicket.ajax.json.JSONFunction;
+import org.apache.wicket.ajax.json.JsonFunction;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -26,6 +22,11 @@ import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
 
+import de.agilecoders.wicket.core.util.Attributes;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.BootstrapDatepickerJsReference;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.BootstrapDatepickerLangJsReference;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.BootstrapDatepickerReference;
+
 /**
  * Abstract base class providing the common aspects of the different kinds of DateTextFields
  * which are based on different date types. This class applies composition over inheritance
@@ -33,25 +34,25 @@ import org.apache.wicket.util.string.Strings;
  * backing the converter.
  *
  * @param <T>
- *     the type of date ({@code java.util.Date} or {@code java.time.LocalDate})
+ *            the type of date ({@code java.util.Date} or {@code java.time.LocalDate})
  * @param <P>
- *     the type of the parent wicket {@code TextField} working with date of type {@code T}
+ *            the type of the parent wicket {@code TextField} working with date of type {@code T}
  * @param <I>
- *     the input date type for the configuration options withBeginDate or withEndDate
+ *            the input date type for the configuration options withBeginDate or withEndDate
  * @param <C>
- *     the configuration - the concrete implementation of the AbstractDateTextFieldConfig
+ *            the configuration - the concrete implementation of the AbstractDateTextFieldConfig
  * @param <F>
- *     the concrete implementation type of this abstract class
+ *            the concrete implementation type of this abstract class
  * @author miha
  * @author Urs Joss
  */
 public abstract class AbstractDateTextField<T, P extends TextField<T> & AbstractTextComponent.ITextFormatProvider, I, C extends AbstractDateTextFieldConfig<C, I>, F extends AbstractDateTextField<T, P, I, C, F>>
-    extends TextField<T> implements AbstractTextComponent.ITextFormatProvider {
+        extends TextField<T> implements AbstractTextComponent.ITextFormatProvider {
 
     private static final String EVENT_PARAM = "datePickerEvent";
-    private static final String DATE        = "date";
+    private static final String DATE = "date";
 
-    private final P        converterDelegate;
+    private final P converterDelegate;
     private final Class<T> dateTextFieldClass;
 
     private C config;
@@ -60,17 +61,17 @@ public abstract class AbstractDateTextField<T, P extends TextField<T> & Abstract
      * Super constructor that needs to be called from the implementing classes
      *
      * @param wicketTextField
-     *     The parent non-bootstrap wicket implementation of the DateTextField.
+     *            The parent non-bootstrap wicket implementation of the DateTextField.
      * @param implementingDateTextFieldClass
-     *     the concrete type of the date text field class inheriting from this abstract base class
+     *            the concrete type of the date text field class inheriting from this abstract base class
      * @param config
-     *     the configuration
+     *            the configuration
      */
     protected AbstractDateTextField(final P wicketTextField, final Class<T> implementingDateTextFieldClass,
-        final C config) {
+            final C config) {
         super(wicketTextField.getId(), wicketTextField.getModel());
-        this.setType(wicketTextField.getType());
-        this.setEscapeModelStrings(false);
+        setType(wicketTextField.getType());
+        setEscapeModelStrings(false);
         this.converterDelegate = wicketTextField;
         this.dateTextFieldClass = implementingDateTextFieldClass;
         this.config = Args.notNull(config, "config");
@@ -87,10 +88,10 @@ public abstract class AbstractDateTextField<T, P extends TextField<T> & Abstract
      * sets the configuration in a fluent style
      *
      * @param config
-     *     the configuration
+     *            the configuration
      * @return this
      */
-    public F with(C config) {
+    public F with(final C config) {
         if (config != null) {
             this.config = config;
         }
@@ -116,7 +117,8 @@ public abstract class AbstractDateTextField<T, P extends TextField<T> & Abstract
         hide,
         // Fired when the date picker is hidden.
         clearDate,
-        // Fired when the date is cleared, normally when the “clear” button (enabled with the clearBtn option) is pressed.
+        // Fired when the date is cleared, normally when the “clear” button (enabled with the clearBtn option) is
+        // pressed.
         changeDate,
         // Fired when the date is changed.
         changeMonth,
@@ -136,7 +138,7 @@ public abstract class AbstractDateTextField<T, P extends TextField<T> & Abstract
         protected abstract CharSequence getBody();
 
         protected String getFunction() {
-            StringBuilder sb = new StringBuilder("function(e) {\n");
+            final StringBuilder sb = new StringBuilder("function(e) {\n");
             sb.append(getBody());
             sb.append("\n}");
             return sb.toString();
@@ -152,40 +154,26 @@ public abstract class AbstractDateTextField<T, P extends TextField<T> & Abstract
 
     private abstract class AbstractAjaxEvent extends AbstractEventHandler {
 
-        private final Event                   event;
+        private final Event event;
         private final IParentAjaxEventHandler handler;
-        private final boolean                 updateModel;
+        private final boolean updateModel;
 
-        public AbstractAjaxEvent(Event event, IParentAjaxEventHandler handler, boolean updateModel) {
+        public AbstractAjaxEvent(final Event event, final IParentAjaxEventHandler handler, final boolean updateModel) {
             this.event = event;
             this.handler = handler;
             this.updateModel = updateModel;
         }
 
-        protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
-            attributes
-                .getExtraParameters()
-                .put(EVENT_PARAM, event.name());
-            attributes
-                .getExtraParameters()
-                .put(DATE, new JSONFunction("e.format()"));
+        protected void updateAjaxAttributes(final AjaxRequestAttributes attributes) {
+            attributes.getExtraParameters().put(EVENT_PARAM, event.name());
+            attributes.getExtraParameters().put(DATE, new JsonFunction("e.format()"));
         }
 
-        protected void onAjaxEvent(AjaxRequestTarget target) {
-            String dateStr = RequestCycle
-                .get()
-                .getRequest()
-                .getRequestParameters()
-                .getParameterValue(DATE)
-                .toString(null);
-            T date = !Strings.isEmpty(dateStr) ?
-                converterDelegate
-                    .getConverter(dateTextFieldClass)
-                    .convertToObject(dateStr, RequestCycle
-                        .get()
-                        .getRequest()
-                        .getLocale()) :
-                null;
+        protected void onAjaxEvent(final AjaxRequestTarget target) {
+            final String dateStr = RequestCycle.get().getRequest().getRequestParameters().getParameterValue(DATE)
+                    .toString(null);
+            final T date = !Strings.isEmpty(dateStr) ? converterDelegate.getConverter(dateTextFieldClass)
+                    .convertToObject(dateStr, RequestCycle.get().getRequest().getLocale()) : null;
             if (updateModel) {
                 setDefaultModelObject(date);
             }
@@ -197,36 +185,36 @@ public abstract class AbstractDateTextField<T, P extends TextField<T> & Abstract
 
         private final AbstractAjaxEvent abstractAjaxEvent;
 
-        public DatePickerAbstractDefaultAjaxBehavior(Event event, IParentAjaxEventHandler handler,
-            boolean updateModel) {
+        public DatePickerAbstractDefaultAjaxBehavior(final Event event, final IParentAjaxEventHandler handler,
+                final boolean updateModel) {
             Args.notNull(event, "event");
             Args.notNull(handler, "handler");
             abstractAjaxEvent = createNew(event, handler, updateModel);
         }
 
-        protected AbstractAjaxEvent createNew(Event event, IParentAjaxEventHandler handler, boolean updateModel) {
+        protected AbstractAjaxEvent createNew(final Event event, final IParentAjaxEventHandler handler,
+                final boolean updateModel) {
             return new AbstractAjaxEvent(event, handler, updateModel) {
                 @Override
                 protected CharSequence getBody() {
-                    return AbstractDateTextField.DatePickerAbstractDefaultAjaxBehavior.this
-                        .getCallbackScript()
-                        .toString();
+                    return AbstractDateTextField.DatePickerAbstractDefaultAjaxBehavior.this.getCallbackScript()
+                            .toString();
                 }
             };
         }
 
         @Override
-        protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+        protected void updateAjaxAttributes(final AjaxRequestAttributes attributes) {
             abstractAjaxEvent.updateAjaxAttributes(attributes);
         }
 
         @Override
-        protected void respond(AjaxRequestTarget target) {
+        protected void respond(final AjaxRequestTarget target) {
             abstractAjaxEvent.onAjaxEvent(target);
         }
     }
 
-    private final Map<Event, AbstractEventHandler> eventMap = new HashMap<Event, AbstractEventHandler>();
+    private final Map<Event, AbstractEventHandler> eventMap = new HashMap<>();
 
     @Override
     protected void onInitialize() {
@@ -236,7 +224,7 @@ public abstract class AbstractDateTextField<T, P extends TextField<T> & Abstract
     }
 
     @Override
-    protected void onComponentTag(ComponentTag tag) {
+    protected void onComponentTag(final ComponentTag tag) {
         checkComponentTag(tag, "input");
         Attributes.set(tag, "type", "text");
 
@@ -250,8 +238,8 @@ public abstract class AbstractDateTextField<T, P extends TextField<T> & Abstract
         response.render(CssHeaderItem.forReference(BootstrapDatepickerReference.INSTANCE));
 
         if (!getConfig().isDefaultLanguageSet()) {
-            response.render(
-                JavaScriptHeaderItem.forReference(new BootstrapDatepickerLangJsReference(getConfig().getLanguage())));
+            response.render(JavaScriptHeaderItem
+                    .forReference(new BootstrapDatepickerLangJsReference(getConfig().getLanguage())));
         } else {
             response.render(JavaScriptHeaderItem.forReference(BootstrapDatepickerJsReference.INSTANCE));
         }
@@ -265,23 +253,14 @@ public abstract class AbstractDateTextField<T, P extends TextField<T> & Abstract
      * @return initializer script
      */
     protected CharSequence createScript(final C config) {
-        CharSequence script = $(this)
-            .chain("datepicker", config)
-            .get();
+        final CharSequence script = $(this).chain("datepicker", config).get();
         if (eventMap.isEmpty()) {
             return script;
         }
         // remove trailing ;
-        StringBuilder sb = new StringBuilder(script.subSequence(0, script.length() - 1));
-        for (Event type : eventMap.keySet()) {
-            sb
-                .append(".on('")
-                .append(type)
-                .append("',")
-                .append(eventMap
-                    .get(type)
-                    .getFunction())
-                .append(')');
+        final StringBuilder sb = new StringBuilder(script.subSequence(0, script.length() - 1));
+        for (final Event type : eventMap.keySet()) {
+            sb.append(".on('").append(type).append("',").append(eventMap.get(type).getFunction()).append(')');
         }
         sb.append(';');
         return sb;
@@ -291,12 +270,12 @@ public abstract class AbstractDateTextField<T, P extends TextField<T> & Abstract
      * Allows to register/add an event handler.
      *
      * @param type
-     *     The event type
+     *            The event type
      * @param handler
-     *     he event type
+     *            he event type
      * @return this
      */
-    public F addEvent(Event type, AbstractEventHandler handler) {
+    public F addEvent(final Event type, final AbstractEventHandler handler) {
         eventMap.put(type, handler);
         return (F) this;
     }
@@ -305,11 +284,11 @@ public abstract class AbstractDateTextField<T, P extends TextField<T> & Abstract
      * Adds and ajax based event. Model object is not updated.
      *
      * @param type
-     *     the event type
+     *            the event type
      * @param evenHandler
-     *     The event handler
+     *            The event handler
      */
-    public F addAjaxEvent(Event type, IParentAjaxEventHandler evenHandler) {
+    public F addAjaxEvent(final Event type, final IParentAjaxEventHandler evenHandler) {
         addAjaxEvent(type, evenHandler, false);
         return (F) this;
     }
@@ -318,15 +297,15 @@ public abstract class AbstractDateTextField<T, P extends TextField<T> & Abstract
      * Adds and ajax based event
      *
      * @param type
-     *     the event type
+     *            the event type
      * @param evenHandler
-     *     The event handler
+     *            The event handler
      * @param updateModel
-     *     if model object should be updated when even is fired
+     *            if model object should be updated when even is fired
      */
-    public F addAjaxEvent(Event type, IParentAjaxEventHandler evenHandler, boolean updateModel) {
-        DatePickerAbstractDefaultAjaxBehavior datePickerAbstractDefaultAjaxBehavior = new DatePickerAbstractDefaultAjaxBehavior(
-            type, evenHandler, updateModel);
+    public F addAjaxEvent(final Event type, final IParentAjaxEventHandler evenHandler, final boolean updateModel) {
+        final DatePickerAbstractDefaultAjaxBehavior datePickerAbstractDefaultAjaxBehavior = new DatePickerAbstractDefaultAjaxBehavior(
+                type, evenHandler, updateModel);
         add(datePickerAbstractDefaultAjaxBehavior);
         addEvent(type, datePickerAbstractDefaultAjaxBehavior.abstractAjaxEvent);
         return (F) this;
@@ -336,10 +315,10 @@ public abstract class AbstractDateTextField<T, P extends TextField<T> & Abstract
      * Allows to remove an event handler
      *
      * @param type
-     *     The event type
+     *            The event type
      * @return this
      */
-    public F removeEvent(Event type) {
+    public F removeEvent(final Event type) {
         eventMap.remove(type);
         return (F) this;
     }

@@ -16,69 +16,66 @@
  */
 package de.agilecoders.wicket.extensions.wizard;
 
+import org.apache.wicket.extensions.wizard.AjaxWizardButtonBar;
+import org.apache.wicket.extensions.wizard.CancelButton;
+import org.apache.wicket.extensions.wizard.FinishButton;
+import org.apache.wicket.extensions.wizard.IWizard;
+import org.apache.wicket.extensions.wizard.LastButton;
+import org.apache.wicket.extensions.wizard.NextButton;
+import org.apache.wicket.extensions.wizard.PreviousButton;
+import org.apache.wicket.extensions.wizard.Wizard;
+
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.ButtonBehavior;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons.Type;
-import org.apache.wicket.extensions.wizard.AjaxWizardButtonBar;
-import org.apache.wicket.extensions.wizard.IWizard;
-import org.apache.wicket.extensions.wizard.Wizard;
-import org.apache.wicket.extensions.wizard.WizardButton;
-
 
 /**
  * @author vit
  */
-public class BootstrapAjaxWizardButtonBar extends AjaxWizardButtonBar
-{
+public class BootstrapAjaxWizardButtonBar extends AjaxWizardButtonBar {
 
-	/**
-	 * Construct.
-	 *
-	 * @param id
-	 * @param wizard
-	 */
-	public BootstrapAjaxWizardButtonBar(String id, Wizard wizard)
-	{
-		super(id, wizard);
-	}
+    /**
+     * Construct.
+     *
+     * @param id
+     * @param wizard
+     */
+    public BootstrapAjaxWizardButtonBar(final String id, final Wizard wizard) {
+        super(id, wizard);
+    }
 
-	@Override
-	protected WizardButton newCancelButton(String id, IWizard wizard)
-	{
-		WizardButton button = super.newCancelButton(id, wizard);
-		button.add(new ButtonBehavior(Type.Warning, Buttons.Size.Medium));
-		return button;
-	}
+    @Override
+    protected CancelButton newCancelButton(final String id, final IWizard wizard) {
+        final CancelButton button = super.newCancelButton(id, wizard);
+        button.add(new ButtonBehavior(Type.Warning, Buttons.Size.Medium));
+        return button;
+    }
 
-	@Override
-	protected WizardButton newFinishButton(String id, IWizard wizard)
-	{
-        WizardButton button = super.newFinishButton(id, wizard);
-		button.add(new ButtonBehavior(Type.Success, Buttons.Size.Medium));
-		return button;
-	}
+    @Override
+    protected FinishButton newFinishButton(final String id, final IWizard wizard) {
+        final FinishButton button = super.newFinishButton(id, wizard);
+        button.add(new ButtonBehavior(Type.Success, Buttons.Size.Medium));
+        return button;
+    }
 
-	@Override
-	protected WizardButton newLastButton(String id, IWizard wizard)
-	{
-        WizardButton button = super.newLastButton(id, wizard);
-		button.add(new ButtonBehavior(Type.Secondary, Buttons.Size.Medium));
-		return button;
-	}
+    @Override
+    protected LastButton newLastButton(final String id, final IWizard wizard) {
+        final LastButton button = super.newLastButton(id, wizard);
+        button.add(new ButtonBehavior(Type.Secondary, Buttons.Size.Medium));
+        return button;
+    }
 
-	@Override
-	protected WizardButton newNextButton(String id, IWizard wizard)
-	{
-        WizardButton button = super.newNextButton(id, wizard);
-		button.add(new ButtonBehavior(Type.Secondary, Buttons.Size.Medium));
-		return button;
-	}
+    @Override
+    protected NextButton newNextButton(final String id, final IWizard wizard) {
+        final NextButton button = super.newNextButton(id, wizard);
+        button.add(new ButtonBehavior(Type.Secondary, Buttons.Size.Medium));
+        return button;
+    }
 
-	@Override
-	protected WizardButton newPreviousButton(String id, IWizard wizard)
-	{
-        WizardButton button = super.newPreviousButton(id, wizard);
-		button.add(new ButtonBehavior(Type.Secondary, Buttons.Size.Medium));
-		return button;
-	}
+    @Override
+    protected PreviousButton newPreviousButton(final String id, final IWizard wizard) {
+        final PreviousButton button = super.newPreviousButton(id, wizard);
+        button.add(new ButtonBehavior(Type.Secondary, Buttons.Size.Medium));
+        return button;
+    }
 }

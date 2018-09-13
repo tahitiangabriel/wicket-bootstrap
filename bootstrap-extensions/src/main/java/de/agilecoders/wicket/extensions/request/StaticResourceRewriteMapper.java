@@ -10,9 +10,8 @@ import org.apache.wicket.request.handler.resource.ResourceReferenceRequestHandle
 import org.apache.wicket.request.mapper.parameter.PageParametersEncoder;
 import org.apache.wicket.request.resource.caching.IResourceCachingStrategy;
 import org.apache.wicket.request.resource.caching.IStaticCacheableResource;
+import org.apache.wicket.util.IProvider;
 import org.apache.wicket.util.string.Strings;
-
-import java.util.function.Supplier;
 
 /**
  * Enables a Wicket application to have its static resources proxied by a CDN, for example
@@ -22,12 +21,16 @@ import java.util.function.Supplier;
  * CDN host instead of the Wicket app.
  * <p/>
  * Here's an example. Normally a CSS resource reference is rendered by Wicket like this:
+ * 
  * <pre class="example">
- * /wicket/resource/com.mycompany.WicketApplication/test.css</pre>
+ * /wicket/resource/com.mycompany.WicketApplication/test.css
+ * </pre>
  * <p/>
  * With {@code StaticResourceRewriteMapper} installed, that resource reference URL is transformed into this:
+ * 
  * <pre class="example">
- * http://age39p8hg23.cloudfront.net/wicket/resource/com.mycompany.WicketApplication/test.css</pre>
+ * http://age39p8hg23.cloudfront.net/wicket/resource/com.mycompany.WicketApplication/test.css
+ * </pre>
  * <p/>
  * <b>Please note: {@code StaticResourceRewriteMapper} will not rewrite resource reference URLs that
  * include query string parameters.</b> Our reasoning is that parameterized URLs usually
@@ -38,18 +41,19 @@ import java.util.function.Supplier;
  * When configuring the CDN host, the easiest setup is a reverse-proxy. For example, with
  * Amazon CloudFront, you would specify your Wicket app as the <em>custom origin</em>, and specify
  * the CloudFront host when constructing this StaticResourceRewriteMapper. It's that easy.
+ * 
  * <pre class="example">
- * public class MyApplication extends WebApplication
- * {
- * &#064;Override
- * protected void init() {
- * super.init();
- * // Enable CDN when in deployment mode
- * if(usesDeploymentConfig()) {
- * StaticResourceRewriteMapper.withBaseUrl("//age39p8hg23.cloudfront.net").install(this);
+ * public class MyApplication extends WebApplication {
+ *     &#064;Override
+ *     protected void init() {
+ *         super.init();
+ *         // Enable CDN when in deployment mode
+ *         if (usesDeploymentConfig()) {
+ *             StaticResourceRewriteMapper.withBaseUrl("//age39p8hg23.cloudfront.net").install(this);
+ *         }
+ *     }
  * }
- * }
- * }</pre>
+ * </pre>
  * <p/>
  * Notice in this example that we've used "//" instead of "http://" for the CDN URL.
  * This trick ensures that "http" or "https" will be automatically selected by the
@@ -57,7 +61,8 @@ import java.util.function.Supplier;
  * <p/>
  * <em>For those familiar with Ruby on Rails, {@code StaticResourceRewriteMapper} is inspired by the Rails
  * {@code action_controller.asset_host} configuration setting.</em>
- * <em>This class is a fork of https://github.com/55minutes/fiftyfive-wicket/blob/v3.2/fiftyfive-wicket-core/src/main/java/fiftyfive/wicket/resource/SimpleCDN.java</em>
+ * <em>This class is a fork of
+ * https://github.com/55minutes/fiftyfive-wicket/blob/v3.2/fiftyfive-wicket-core/src/main/java/fiftyfive/wicket/resource/SimpleCDN.java</em>
  */
 public class StaticResourceRewriteMapper implements IRequestMapper {
 
@@ -78,7 +83,7 @@ public class StaticResourceRewriteMapper implements IRequestMapper {
      * Construct a {@code StaticResourceRewriteMapper} that will rewrite resource reference URLs
      * by prepending the given {@code baseUrl}.
      *
-     * @param baseUrl  For example, "//age39p8hg23.cloudfront.net"
+     * @param baseUrl For example, "//age39p8hg23.cloudfront.net"
      * @param chain the base request mapper
      */
     private StaticResourceRewriteMapper(final String baseUrl, final IRequestMapper chain) {
@@ -104,7 +109,7 @@ public class StaticResourceRewriteMapper implements IRequestMapper {
             if (resourceReferenceRequestHandler.getResource() instanceof IStaticCacheableResource) {
                 final Url url = chain.mapHandler(requestHandler);
 
-                if (url != null && url.getQueryParameters().isEmpty()) {
+                if ((url != null) && url.getQueryParameters().isEmpty()) {
                     return Url.parse(Strings.join("/", baseUrl, url.toString()));
                 } else {
                     return url;
@@ -145,7 +150,7 @@ public class StaticResourceRewriteMapper implements IRequestMapper {
          *
          * @param url base url
          */
-        private Builder(String url) {
+        private Builder(final String url) {
             this.url = url;
         }
 
@@ -155,8 +160,7 @@ public class StaticResourceRewriteMapper implements IRequestMapper {
          */
         public void install(final WebApplication app) {
             final IRequestMapper delegate = new ResourceReferenceMapper(new PageParametersEncoder(),
-                                                                        newParentFolderPlaceholder(app),
-                                                                        newResourceCachingStrategy(app));
+                    newParentFolderPlaceholder(app), newResourceCachingStrategy(app));
 
             final StaticResourceRewriteMapper mapper = new StaticResourceRewriteMapper(url, delegate);
             app.mount(mapper);
@@ -168,7 +172,7 @@ public class StaticResourceRewriteMapper implements IRequestMapper {
          * @param app The web application
          * @return new provider
          */
-        private Supplier<String> newParentFolderPlaceholder(final WebApplication app) {
+        private IProvider<String> newParentFolderPlaceholder(final WebApplication app) {
             return () -> app.getResourceSettings().getParentFolderPlaceholder();
         }
 
@@ -178,7 +182,7 @@ public class StaticResourceRewriteMapper implements IRequestMapper {
          * @param app The web application
          * @return new provider
          */
-        private Supplier<IResourceCachingStrategy> newResourceCachingStrategy(final WebApplication app) {
+        private IProvider<IResourceCachingStrategy> newResourceCachingStrategy(final WebApplication app) {
             return () -> app.getResourceSettings().getCachingStrategy();
         }
     }

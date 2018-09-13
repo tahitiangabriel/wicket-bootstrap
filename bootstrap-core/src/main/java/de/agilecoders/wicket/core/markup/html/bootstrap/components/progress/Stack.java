@@ -1,11 +1,13 @@
 package de.agilecoders.wicket.core.markup.html.bootstrap.components.progress;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.utilities.BackgroundColorBehavior;
-import de.agilecoders.wicket.core.util.Attributes;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+
+import de.agilecoders.wicket.core.markup.html.bootstrap.utilities.BackgroundColorBehavior;
+import de.agilecoders.wicket.core.util.Attributes;
 
 /**
  * Represents a stack of the progress bar.
@@ -20,7 +22,7 @@ public class Stack extends GenericPanel<Integer> {
     /**
      * The color type of the stack
      */
-    private BackgroundColorBehavior backgroundColorBehavior = BackgroundColorBehavior.secondary();
+    private final BackgroundColorBehavior backgroundColorBehavior = BackgroundColorBehavior.secondary();
 
     /**
      * A flag that is used to decide whether to show the label or not.
@@ -44,7 +46,7 @@ public class Stack extends GenericPanel<Integer> {
      * @param id The component id
      * @param model The progress of this stack
      */
-    public Stack(String id, IModel<Integer> model) {
+    public Stack(final String id, final IModel<Integer> model) {
         super(id, model);
     }
 
@@ -60,8 +62,8 @@ public class Stack extends GenericPanel<Integer> {
         return backgroundColorBehavior.getColor();
     }
 
-    public Stack color(BackgroundColorBehavior.Color color) {
-        this.backgroundColorBehavior.color(color);
+    public Stack color(final BackgroundColorBehavior.Color color) {
+        backgroundColorBehavior.color(color);
 
         return this;
     }
@@ -70,7 +72,7 @@ public class Stack extends GenericPanel<Integer> {
         return labeled;
     }
 
-    public Stack labeled(boolean labeled) {
+    public Stack labeled(final boolean labeled) {
         this.labeled = labeled;
         return this;
     }
@@ -79,7 +81,7 @@ public class Stack extends GenericPanel<Integer> {
         return striped;
     }
 
-    public Stack striped(boolean value) {
+    public Stack striped(final boolean value) {
         striped = value;
         return this;
     }
@@ -88,7 +90,7 @@ public class Stack extends GenericPanel<Integer> {
         return animated;
     }
 
-    public Stack active(boolean value) {
+    public Stack active(final boolean value) {
         animated = value;
         if (value) {
             striped(true);
@@ -106,10 +108,10 @@ public class Stack extends GenericPanel<Integer> {
     }
 
     @Override
-    protected void onComponentTag(ComponentTag tag) {
+    protected void onComponentTag(final ComponentTag tag) {
         super.onComponentTag(tag);
 
-        Integer value = getModelObject();
+        final Integer value = getModelObject();
         Attributes.set(tag, "style", String.format("width: %s%%", value));
         Attributes.set(tag, "aria-valuenow", String.valueOf(value));
         Attributes.set(tag, "aria-valuemin", String.valueOf(ProgressBar.MIN));
@@ -126,13 +128,12 @@ public class Stack extends GenericPanel<Integer> {
         Attributes.addClass(tag, color().cssClassName());
     }
 
-
     /**
      * Creates a model that is used for the stack's label
      *
      * @return A model with the label
      */
     protected IModel<String> createLabelModel() {
-        return () -> String.format("%s%%", Stack.this.getModelObject());
+        return Model.of(String.format("%s%%", Stack.this.getModelObject()));
     }
 }

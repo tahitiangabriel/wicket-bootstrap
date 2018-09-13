@@ -1,5 +1,25 @@
 package de.agilecoders.wicket.samples.pages;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import org.apache.wicket.Component;
+import org.apache.wicket.Page;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.event.Broadcast;
+import org.apache.wicket.event.IEvent;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.time.Duration;
+import org.wicketstuff.annotation.mount.MountPath;
+
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.ButtonBehavior;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
@@ -20,25 +40,6 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.ColorPickerCo
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.ColorPickerTextField;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;
 import de.agilecoders.wicket.samples.components.issues.CustomNavbarForm;
-import org.apache.wicket.Component;
-import org.apache.wicket.Page;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.event.Broadcast;
-import org.apache.wicket.event.IEvent;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.util.time.Duration;
-import org.wicketstuff.annotation.mount.MountPath;
-
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * The {@code BaseCssPage}
@@ -54,15 +55,13 @@ public class IssuesPage extends BasePage {
      *
      * @param parameters the current page parameters.
      */
-    public IssuesPage(PageParameters parameters) {
+    public IssuesPage(final PageParameters parameters) {
         super(parameters);
-
 
         add(new NotificationPanel("feedback").hideAfter(Duration.seconds(5)));
 
         // issue #80
-        add(new ParentNavbar("navbar-parent"),
-            new SubNavbar("navbar-child"));
+        add(new ParentNavbar("navbar-parent"), new SubNavbar("navbar-child"));
 
         // issue #88
         add(createDatePickerForm("datepicker-form"));
@@ -70,32 +69,29 @@ public class IssuesPage extends BasePage {
         // issue #-1
         add(new Navbar("navbar-form").addComponents(new AbstractNavbarComponent(Navbar.ComponentPosition.LEFT) {
             @Override
-            public Component create(String markupId) {
+            public Component create(final String markupId) {
                 return new CustomNavbarForm(markupId);
             }
         }));
 
         // issue #90
-        Modal<String> modal = newModalDialog("endless-modal").setUseCloseHandler(true).setFadeIn(true).setUseKeyboard(true);
-        Label button = new Label("open-endless-modal", "Open Modal Dialog");
+        final Modal<String> modal = newModalDialog("endless-modal").setUseCloseHandler(true).setFadeIn(true)
+                .setUseKeyboard(true);
+        final Label button = new Label("open-endless-modal", "Open Modal Dialog");
         modal.addOpenerAttributesTo(button);
         add(modal, button);
 
         // issue #93
-        add(new Label("popover", "Popover (hover, top)").add(new PopoverBehavior(
-                Model.of("title"),
-                Model.of("content"),
-                new PopoverConfig().withHoverTrigger().withPlacement(TooltipConfig.Placement.top)
-        )));
+        add(new Label("popover", "Popover (hover, top)").add(new PopoverBehavior(Model.of("title"), Model.of("content"),
+                new PopoverConfig().withHoverTrigger().withPlacement(TooltipConfig.Placement.top))));
 
-        add(new Label("richpopover", "Popover (hover, top)").add(new RichPopoverBehavior(
-                Model.of("title"),
-                new PopoverConfig().withHoverTrigger().withPlacement(TooltipConfig.Placement.top)
-        ) {
+        add(new Label("richpopover", "Popover (hover, top)").add(new RichPopoverBehavior(Model.of("title"),
+                new PopoverConfig().withHoverTrigger().withPlacement(TooltipConfig.Placement.top)) {
 
             @Override
-            public Component newBodyComponent(String markupId) {
-                Label label = new Label(markupId, Model.of("<h2>rich content</h2><a href=\"http://wb.agilecoders.de\">Link</a>"));
+            public Component newBodyComponent(final String markupId) {
+                final Label label = new Label(markupId,
+                        Model.of("<h2>rich content</h2><a href=\"http://wb.agilecoders.de\">Link</a>"));
                 label.setEscapeModelStrings(false);
 
                 return label;
@@ -103,17 +99,20 @@ public class IssuesPage extends BasePage {
         }));
 
         // issue #102
-        add(new BootstrapLink<Page>("link", Model.<Page>of(this)) {
+        add(new BootstrapLink<Page>("link", Model.<Page> of(this)) {
             @Override
             public void onClick() {
-                getSession().success(new NotificationMessage(Model.of("link 1 clicked"), Model.of("issue #102:"), true));
+                getSession()
+                        .success(new NotificationMessage(Model.of("link 1 clicked"), Model.of("issue #102:"), true));
                 setResponsePage(getModelObject());
             }
         }.setLabel(Model.of("Link 1")));
-        add(new BootstrapLink<Page>("link-danger", Model.<Page>of(this), Buttons.Type.Danger) {
+        add(new BootstrapLink<Page>("link-danger", Model.<Page> of(this), Buttons.Type.Danger) {
             @Override
             public void onClick() {
-                getSession().success(new NotificationMessage(Model.of("link 2 <u>clicked</u>"), Model.of("issue #102:"), true).escapeModelStrings(false));
+                getSession().success(
+                        new NotificationMessage(Model.of("link 2 <u>clicked</u>"), Model.of("issue #102:"), true)
+                                .escapeModelStrings(false));
                 setResponsePage(getModelObject());
             }
         }.setLabel(Model.of("Link 2")));
@@ -121,14 +120,14 @@ public class IssuesPage extends BasePage {
         add(createColorPickerForm("colorpicker-form"));
     }
 
-    private Modal<String> newModalDialog(String markupId) {
+    private Modal<String> newModalDialog(final String markupId) {
         final Modal<String> modal = new TextContentModal(markupId, Model.of("Issue #90"));
         modal.addButton(new ModalCloseButton());
 
         return modal;
     }
 
-    private DateBean dateBean = new DateBean();
+    private final DateBean dateBean = new DateBean();
 
     /**
      * creates a form that contains a datepicker.
@@ -137,10 +136,10 @@ public class IssuesPage extends BasePage {
      * @return new form
      */
     public Form<?> createDatePickerForm(final String markupId) {
-        Form<DateBean> form = new Form<>(markupId, new CompoundPropertyModel<>(
-                                                         new PropertyModel<DateBean>(this, "dateBean")));
+        final Form<DateBean> form = new Form<>(markupId,
+                new CompoundPropertyModel<>(new PropertyModel<DateBean>(this, "dateBean")));
         add(form);
-        DateTextField dueDate = new DateTextField("dueDate");
+        final DateTextField dueDate = new DateTextField("dueDate");
         form.add(dueDate);
 
         form.add(new AjaxSubmitLink("submit", form) {
@@ -154,7 +153,7 @@ public class IssuesPage extends BasePage {
             }
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target) {
+            protected void onSubmit(final AjaxRequestTarget target, final Form<?> paramForm) {
                 target.appendJavaScript("alert('DateBean.dueDate is: " + dateBean.getDueDate() + "');");
             }
         });
@@ -174,15 +173,15 @@ public class IssuesPage extends BasePage {
         colorPickerFeedback.setOutputMarkupId(true);
         add(colorPickerFeedback);
 
-        Form<Void> form = new Form<>(markupId);
+        final Form<Void> form = new Form<>(markupId);
         add(form);
 
-        ColorPickerConfig config = new ColorPickerConfig();
+        final ColorPickerConfig config = new ColorPickerConfig();
         config.setComponent(true);
         config.setAjaxUpdate(true);
         final ColorPickerTextField colorPicker = new ColorPickerTextField("colorPicker", Model.of(""), config) {
             @Override
-            protected void onChange(AjaxRequestTarget target, String color) {
+            protected void onChange(final AjaxRequestTarget target, final String color) {
                 super.onChange(target, color);
 
                 success("Selected color is: " + color);
@@ -202,7 +201,7 @@ public class IssuesPage extends BasePage {
             }
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target) {
+            protected void onSubmit(final AjaxRequestTarget target, final Form<?> paramForm) {
                 success("Selected color is: " + colorPicker.getModelObject());
                 target.add(colorPickerFeedback);
             }
@@ -220,7 +219,7 @@ public class IssuesPage extends BasePage {
             this(new Date());
         }
 
-        public DateBean(Date dueDate) {
+        public DateBean(final Date dueDate) {
             this.dueDate = dueDate;
         }
 
@@ -228,15 +227,15 @@ public class IssuesPage extends BasePage {
             return dueDate;
         }
 
-        public void setDueDate(Date dueDate) {
+        public void setDueDate(final Date dueDate) {
             this.dueDate = dueDate;
         }
 
         /*
-           * (non-Javadoc)
-           *
-           * @see java.lang.Object#toString()
-           */
+         * (non-Javadoc)
+         *
+         * @see java.lang.Object#toString()
+         */
         @Override
         public String toString() {
             return "DateBean [dueDate=" + dueDate + "]";
@@ -258,41 +257,38 @@ public class IssuesPage extends BasePage {
             setInverted(true);
             setOutputMarkupId(true);
 
-            addComponents(
-                    new ImmutableNavbarComponent(new NavbarAjaxLink<String>(Model.of("button a")) {
-                        @Override
-                        public void onClick(AjaxRequestTarget target) {
-                            target.appendJavaScript("alert('button A clicked');");
-                        }
+            addComponents(new ImmutableNavbarComponent(new NavbarAjaxLink<String>(Model.of("button a")) {
+                @Override
+                public void onClick(final AjaxRequestTarget target) {
+                    target.appendJavaScript("alert('button A clicked');");
+                }
 
-                        @Override
-                        public boolean isVisible() {
-                            return SubNavGroup.A.equals(group.getObject());
-                        }
-                    }, ComponentPosition.LEFT),
-                    new ImmutableNavbarComponent(new NavbarAjaxLink<String>(Model.of("button b")) {
-                        @Override
-                        public void onClick(AjaxRequestTarget target) {
-                            target.appendJavaScript("alert('button B clicked');");
-                        }
+                @Override
+                public boolean isVisible() {
+                    return SubNavGroup.A.equals(group.getObject());
+                }
+            }, ComponentPosition.LEFT), new ImmutableNavbarComponent(new NavbarAjaxLink<String>(Model.of("button b")) {
+                @Override
+                public void onClick(final AjaxRequestTarget target) {
+                    target.appendJavaScript("alert('button B clicked');");
+                }
 
-                        @Override
-                        public boolean isVisible() {
-                            return SubNavGroup.B.equals(group.getObject());
-                        }
-                    }, ComponentPosition.LEFT)
-            );
+                @Override
+                public boolean isVisible() {
+                    return SubNavGroup.B.equals(group.getObject());
+                }
+            }, ComponentPosition.LEFT));
         }
 
         /**
          * @see org.apache.wicket.Component#onEvent(org.apache.wicket.event.IEvent)
          */
         @Override
-        public void onEvent(IEvent<?> event) {
+        public void onEvent(final IEvent<?> event) {
             super.onEvent(event);
 
             if (event.getPayload() instanceof ToggleSubNavbarState) {
-                ToggleSubNavbarState stateEvent = (ToggleSubNavbarState) event.getPayload();
+                final ToggleSubNavbarState stateEvent = (ToggleSubNavbarState) event.getPayload();
 
                 group.setObject(stateEvent.getGroup());
 
@@ -308,20 +304,18 @@ public class IssuesPage extends BasePage {
             setInverted(false);
             setOutputMarkupId(true);
 
-            addComponents(
-                    new ImmutableNavbarComponent(new NavbarAjaxLink<String>(Model.of("button group a")) {
-                        @Override
-                        public void onClick(AjaxRequestTarget target) {
-                            send(getPage(), Broadcast.BREADTH, new ToggleSubNavbarState(target, SubNavGroup.A));
-                        }
-                    }, ComponentPosition.LEFT),
+            addComponents(new ImmutableNavbarComponent(new NavbarAjaxLink<String>(Model.of("button group a")) {
+                @Override
+                public void onClick(final AjaxRequestTarget target) {
+                    send(getPage(), Broadcast.BREADTH, new ToggleSubNavbarState(target, SubNavGroup.A));
+                }
+            }, ComponentPosition.LEFT),
                     new ImmutableNavbarComponent(new NavbarAjaxLink<String>(Model.of("button group b")) {
                         @Override
-                        public void onClick(AjaxRequestTarget target) {
+                        public void onClick(final AjaxRequestTarget target) {
                             send(getPage(), Broadcast.BREADTH, new ToggleSubNavbarState(target, SubNavGroup.B));
                         }
-                    }, ComponentPosition.LEFT)
-            );
+                    }, ComponentPosition.LEFT));
         }
     }
 
@@ -338,7 +332,7 @@ public class IssuesPage extends BasePage {
          *
          * @param target The Ajax request handler
          */
-        public ToggleSubNavbarState(AjaxRequestTarget target, SubNavGroup group) {
+        public ToggleSubNavbarState(final AjaxRequestTarget target, final SubNavGroup group) {
             this.target = target;
             this.group = group;
         }

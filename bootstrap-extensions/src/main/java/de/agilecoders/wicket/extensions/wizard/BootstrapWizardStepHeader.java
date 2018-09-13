@@ -24,21 +24,19 @@ import org.apache.wicket.model.CompoundPropertyModel;
 /**
  * @author rozkovec
  */
-class BootstrapWizardStepHeader extends Panel
-{
+class BootstrapWizardStepHeader extends Panel {
 
-	/**
-	 * Construct.
-	 *
-	 * @param id
-	 * @param wizardStep
-	 * @param wizard
-	 */
-	public BootstrapWizardStepHeader(final String id, BootstrapWizardStep wizardStep, final IWizard wizard)
-	{
-		super(id);
-		setDefaultModel(new CompoundPropertyModel<>(wizard));
-		add(new Label("title", wizardStep::getTitle));
-		add(new Label("summary", wizardStep::getSummary));
-	}
+    /**
+     * Construct.
+     *
+     * @param id
+     * @param wizardStep
+     * @param wizard
+     */
+    public BootstrapWizardStepHeader(final String id, final BootstrapWizardStep wizardStep, final IWizard wizard) {
+        super(id);
+        setDefaultModel(new CompoundPropertyModel<>(wizard));
+        add(new Label("title", wizardStep.getTitle()));
+        add(new Label("summary", wizardStep.getSummary()));
+    }
 }

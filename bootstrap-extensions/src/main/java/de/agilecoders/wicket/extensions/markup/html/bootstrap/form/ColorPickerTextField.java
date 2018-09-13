@@ -1,8 +1,10 @@
 package de.agilecoders.wicket.extensions.markup.html.bootstrap.form;
 
-import de.agilecoders.wicket.core.util.Attributes;
-import de.agilecoders.wicket.jquery.JQuery;
-import de.agilecoders.wicket.jquery.function.JavaScriptInlineFunction;
+import static de.agilecoders.wicket.jquery.JQuery.$;
+
+import java.util.List;
+import java.util.Map;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestHandler;
@@ -20,10 +22,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
 
-import java.util.List;
-import java.util.Map;
-
-import static de.agilecoders.wicket.jquery.JQuery.*;
+import de.agilecoders.wicket.core.util.Attributes;
+import de.agilecoders.wicket.jquery.JQuery;
+import de.agilecoders.wicket.jquery.function.JavaScriptInlineFunction;
 
 /**
  * Bootstrap ColorPicker from https://farbelous.io/bootstrap-colorpicker/v2/
@@ -43,7 +44,7 @@ public class ColorPickerTextField extends TextField<String> {
     /**
      * @param id
      */
-    public ColorPickerTextField(String id) {
+    public ColorPickerTextField(final String id) {
         this(id, null, new ColorPickerConfig());
     }
 
@@ -51,11 +52,11 @@ public class ColorPickerTextField extends TextField<String> {
      * @param id
      * @param model
      */
-    public ColorPickerTextField(String id, IModel<String> model) {
+    public ColorPickerTextField(final String id, final IModel<String> model) {
         this(id, model, new ColorPickerConfig());
     }
 
-    public ColorPickerTextField(String id, IModel<String> model, ColorPickerConfig config) {
+    public ColorPickerTextField(final String id, final IModel<String> model, final ColorPickerConfig config) {
         super(id, model, String.class);
 
         this.config = config;
@@ -67,62 +68,62 @@ public class ColorPickerTextField extends TextField<String> {
     protected void onConfigure() {
         super.onConfigure();
 
-        List<ColorChangeAjaxBehavior> behaviors = getBehaviors(ColorChangeAjaxBehavior.class);
+        final List<ColorChangeAjaxBehavior> behaviors = getBehaviors(ColorChangeAjaxBehavior.class);
         if (config.isAjaxUpdate()) {
             if (behaviors.isEmpty()) {
                 add(new ColorChangeAjaxBehavior() {
 
                     @Override
-                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                    protected void updateAjaxAttributes(final AjaxRequestAttributes attributes) {
                         super.updateAjaxAttributes(attributes);
                         ColorPickerTextField.this.updateAjaxAttributes(attributes);
                     }
 
                     @Override
-                    protected void onChange(AjaxRequestTarget target, String color) {
+                    protected void onChange(final AjaxRequestTarget target, final String color) {
                         ColorPickerTextField.this.onChange(target, color);
                     }
                 });
             }
         } else {
-            for (ColorChangeAjaxBehavior colorChangeAjaxBehavior : behaviors) {
+            for (final ColorChangeAjaxBehavior colorChangeAjaxBehavior : behaviors) {
                 remove(colorChangeAjaxBehavior);
             }
         }
     }
 
-    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+    protected void updateAjaxAttributes(final AjaxRequestAttributes attributes) {
     }
 
-    protected void onChange(AjaxRequestTarget target, String color) {
+    protected void onChange(final AjaxRequestTarget target, final String color) {
     }
 
     @Override
-    public void renderHead(IHeaderResponse response) {
+    public void renderHead(final IHeaderResponse response) {
         super.renderHead(response);
 
         response.render(CssHeaderItem.forReference(ColorPickerTextFieldCssReference.instance()));
         response.render(JavaScriptHeaderItem.forReference(ColorPickerTextFieldJavaScriptReference.instance()));
         if (isEnabledInHierarchy()) {
             response.render(OnDomReadyHeaderItem.forScript(createScript(config)));
-            //wasEnhanced = true; // not working if initially disabled
+            // wasEnhanced = true; // not working if initially disabled
         }
     }
 
     @Override
-    protected void onComponentTag(ComponentTag tag) {
+    protected void onComponentTag(final ComponentTag tag) {
         super.onComponentTag(tag);
         Attributes.addClass(tag, "colorpicker-component");
     }
 
     @Override
-    public void onEvent(IEvent <?> event) {
+    public void onEvent(final IEvent<?> event) {
         super.onEvent(event);
         if (event.getPayload() instanceof AjaxRequestHandler) {
             final AjaxRequestHandler target = (AjaxRequestHandler) event.getPayload();
-            target.addListener(new AjaxRequestTarget.IListener() {
+            target.addListener(new AjaxRequestTarget.AbstractListener() {
                 @Override
-                public void onAfterRespond(Map<String, Component> map, IJavaScriptResponse response) {
+                public void onAfterRespond(final Map<String, Component> map, final IJavaScriptResponse response) {
                     if (isEnabledInHierarchy() && !wasEnhanced) {
                         response.addJavaScript(createScript(config));
                         wasEnhanced = true;
@@ -135,14 +136,13 @@ public class ColorPickerTextField extends TextField<String> {
         }
     }
 
-
     /**
      * creates the initializer script.
      *
      * @return initializer script
      */
     protected String createScript(final ColorPickerConfig config) {
-        JQuery script = $(this);
+        final JQuery script = $(this);
 
         if (config.isComponent()) {
             script.closest(".colorpicker-component");
@@ -151,14 +151,13 @@ public class ColorPickerTextField extends TextField<String> {
 
         if (config.isAjaxUpdate()) {
 
-            List<ColorChangeAjaxBehavior> behaviors = getBehaviors(ColorChangeAjaxBehavior.class);
-            ColorChangeAjaxBehavior colorChangeAjaxBehavior = behaviors.get(0);
-            String toColor = config.getFormat().to();
+            final List<ColorChangeAjaxBehavior> behaviors = getBehaviors(ColorChangeAjaxBehavior.class);
+            final ColorChangeAjaxBehavior colorChangeAjaxBehavior = behaviors.get(0);
+            final String toColor = config.getFormat().to();
 
-            CharSequence attrs = colorChangeAjaxBehavior.getAttrs();
+            final CharSequence attrs = colorChangeAjaxBehavior.getAttrs();
             script.on("changeColor", new JavaScriptInlineFunction(
-                    String.format("var color = evt.color.%s; new Wicket.Ajax.Call().ajax(%s)",
-                                  toColor, attrs)));
+                    String.format("var color = evt.color.%s; new Wicket.Ajax.Call().ajax(%s)", toColor, attrs)));
         }
 
         return script.get();
@@ -167,7 +166,7 @@ public class ColorPickerTextField extends TextField<String> {
     private static abstract class ColorChangeAjaxBehavior extends AbstractDefaultAjaxBehavior {
 
         @Override
-        protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+        protected void updateAjaxAttributes(final AjaxRequestAttributes attributes) {
             super.updateAjaxAttributes(attributes);
 
             attributes.getDynamicExtraParameters().add("return [{name: 'color', value: color}]");
@@ -178,9 +177,9 @@ public class ColorPickerTextField extends TextField<String> {
         }
 
         @Override
-        protected void respond(AjaxRequestTarget target) {
-            IRequestParameters requestParameters = getComponent().getRequest().getRequestParameters();
-            StringValue color = requestParameters.getParameterValue("color");
+        protected void respond(final AjaxRequestTarget target) {
+            final IRequestParameters requestParameters = getComponent().getRequest().getRequestParameters();
+            final StringValue color = requestParameters.getParameterValue("color");
 
             onChange(target, color.toString());
         }

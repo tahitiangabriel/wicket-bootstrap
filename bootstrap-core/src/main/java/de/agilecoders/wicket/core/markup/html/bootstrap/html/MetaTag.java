@@ -1,33 +1,33 @@
 package de.agilecoders.wicket.core.markup.html.bootstrap.html;
 
-import de.agilecoders.wicket.core.util.Components;
-import de.agilecoders.wicket.jquery.util.Generics2;
+import static de.agilecoders.wicket.jquery.util.Strings2.nullToEmpty;
+
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.apache.wicket.IGenericComponent;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
-import java.util.List;
-import java.util.regex.Pattern;
-
-import static de.agilecoders.wicket.jquery.util.Strings2.nullToEmpty;
+import de.agilecoders.wicket.core.util.Components;
+import de.agilecoders.wicket.jquery.util.Generics2;
 
 /**
  * A simple meta tag component.
  *
- * <p>The value of the <em>content</em> attribute is stored as model object for this component</p>
+ * <p>
+ * The value of the <em>content</em> attribute is stored as model object for this component
+ * </p>
  *
  * @author miha
  */
-public class MetaTag extends WebMarkupContainer implements IGenericComponent<String, MetaTag> {
+public class MetaTag extends WebMarkupContainer implements IGenericComponent<String> {
     // @see http://www.w3schools.com/tags/att_meta_http_equiv.asp
-    private static final List<String> HTTP_EQUIV_NAMES = Generics2.newArrayList(
-            "content-type", "expires", "refresh", "pragma", "cache-control",
-            "content-language", "set-cookie", "PICS-Label", "content-script-type",
-            "content-style-type", "last-modified", "date", "location",
-            "window-target"
-    );
+    private static final List<String> HTTP_EQUIV_NAMES = Generics2.newArrayList("content-type", "expires", "refresh",
+            "pragma", "cache-control", "content-language", "set-cookie", "PICS-Label", "content-script-type",
+            "content-style-type", "last-modified", "date", "location", "window-target");
     // @see http://ogp.me/
     private static final Pattern OGP_PROPERTIES = Pattern.compile("^(og|music|video|article|book|profile):.+");
 
@@ -40,11 +40,12 @@ public class MetaTag extends WebMarkupContainer implements IGenericComponent<Str
      * All possible meta tag types
      */
     public enum Type {
-        Detect(""), Default(ATTRIBUTE_NAME_DEFAULT), HttpEquiv(ATTRIBUTE_NAME_HTTPEQUIV), Property(ATTRIBUTE_NAME_PROPERTY);
+        Detect(""), Default(ATTRIBUTE_NAME_DEFAULT), HttpEquiv(ATTRIBUTE_NAME_HTTPEQUIV), Property(
+                ATTRIBUTE_NAME_PROPERTY);
 
         private final String nameAttribute;
 
-        Type(String nameAttribute) {
+        Type(final String nameAttribute) {
             this.nameAttribute = nameAttribute;
         }
 
@@ -60,7 +61,7 @@ public class MetaTag extends WebMarkupContainer implements IGenericComponent<Str
     /**
      * Construct.
      *
-     * @param id   the wicket markup id
+     * @param id the wicket markup id
      * @param name the name of this meta tag
      * @deprecated please use constructor with content
      */
@@ -72,38 +73,38 @@ public class MetaTag extends WebMarkupContainer implements IGenericComponent<Str
     /**
      * Construct.
      *
-     * @param id   the wicket markup id
+     * @param id the wicket markup id
      * @param name the name of this meta tag
      * @deprecated please use constructor with content
      */
     @Deprecated
-    public MetaTag(String id, IModel<String> name) {
+    public MetaTag(final String id, final IModel<String> name) {
         this(id, name, Model.of(""));
     }
 
     /**
      * Construct.
      *
-     * @param id      the wicket markup id
-     * @param name    the name of this meta tag
+     * @param id the wicket markup id
+     * @param name the name of this meta tag
      * @param content the content of this meta tag
      */
-    public MetaTag(String id, String name, String content) {
+    public MetaTag(final String id, final String name, final String content) {
         this(id, Model.of(name), Model.of(content));
     }
 
     /**
      * Construct.
      *
-     * @param id      the wicket markup id
-     * @param name    the name of this meta tag
+     * @param id the wicket markup id
+     * @param name the name of this meta tag
      * @param content the content of this meta tag
      */
-    public MetaTag(String id, IModel<String> name, IModel<String> content) {
+    public MetaTag(final String id, final IModel<String> name, final IModel<String> content) {
         super(id, content);
 
         this.name = name;
-        this.type = Type.Detect;
+        type = Type.Detect;
     }
 
     /**
@@ -112,9 +113,10 @@ public class MetaTag extends WebMarkupContainer implements IGenericComponent<Str
      * name.
      *
      * @param name the name of this meta tag
-     * @return {@link Type#HttpEquiv} for all names that are listed in {@link #HTTP_EQUIV_NAMES} else {@link Type#Default}
+     * @return {@link Type#HttpEquiv} for all names that are listed in {@link #HTTP_EQUIV_NAMES} else
+     *         {@link Type#Default}
      */
-    private Type detect(String name) {
+    private Type detect(final String name) {
         if (HTTP_EQUIV_NAMES.contains(nullToEmpty(name).toLowerCase())) {
             return Type.HttpEquiv;
         } else if (OGP_PROPERTIES.matcher(nullToEmpty(name)).matches()) {
@@ -131,7 +133,7 @@ public class MetaTag extends WebMarkupContainer implements IGenericComponent<Str
      * @param type the type to use
      * @return this instance for chaining.
      */
-    public MetaTag type(Type type) {
+    public MetaTag type(final Type type) {
         this.type = type;
         return this;
     }
@@ -169,20 +171,40 @@ public class MetaTag extends WebMarkupContainer implements IGenericComponent<Str
      * @deprecated please use constructor instead.
      */
     @Deprecated
-    public MetaTag content(String content) {
-        this.setModelObject(content);
+    public MetaTag content(final String content) {
+        setModelObject(content);
         return this;
     }
 
     @Override
-    protected void onComponentTag(ComponentTag tag) {
+    protected void onComponentTag(final ComponentTag tag) {
         super.onComponentTag(tag);
 
         Components.assertTag(this, tag, "meta");
 
-        String nameAttribute = type().nameAttribute;
+        final String nameAttribute = type().nameAttribute;
 
         tag.put(nameAttribute, name());
         tag.put(ATTRIBUTE_NAME_CONTENT, content());
+    }
+
+    @Override
+    public IModel<String> getModel() {
+        return (IModel<String>) getDefaultModel();
+    }
+
+    @Override
+    public void setModel(final IModel<String> model) {
+        setDefaultModel(model);
+    }
+
+    @Override
+    public void setModelObject(final String object) {
+        setDefaultModelObject(object);
+    }
+
+    @Override
+    public String getModelObject() {
+        return getDefaultModelObjectAsString();
     }
 }
