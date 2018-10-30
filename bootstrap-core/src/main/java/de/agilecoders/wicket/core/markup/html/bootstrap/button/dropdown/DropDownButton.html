@@ -4,15 +4,15 @@
     </head>
     <body>
         <wicket:panel>
-            <a class="btn dropdown-toggle" data-toggle="dropdown" wicket:id="btn" href="#">
+            <button class="btn dropdown-toggle" data-toggle="dropdown" wicket:id="btn">
                 <span wicket:id="icon"></span>
                 <wicket:container wicket:id="label"></wicket:container>
-            </a>
-            <ul wicket:id="dropdown-menu" class="dropdown-menu">
-                <li wicket:id="buttons">
+            </button>
+            <div wicket:id="dropdown-menu" class="dropdown-menu">
+                <div wicket:id="buttons">
                     <a wicket:id="button" class="dropdown-item"></a>
-                </li>
-            </ul>
+                </div>
+            </div>
         </wicket:panel>
     </body>
 </html>
