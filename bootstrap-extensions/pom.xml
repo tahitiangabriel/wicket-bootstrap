@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>de.agilecoders.wicket</groupId>
-        <artifactId>bootstrap-parent</artifactId>
+        <artifactId>bootstrap-parent</artifactId>        
         <version>1.00-PITI-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
